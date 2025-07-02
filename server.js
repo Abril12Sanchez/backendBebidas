@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path")
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -25,6 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use("/api", bebidaRutas);
 // Puerto de escucha _ habilitamos el puerto 4000
