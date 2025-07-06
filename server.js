@@ -3,10 +3,11 @@ const path = require("path")
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+require('dotenv').config();
 
 // conectamos a la base de datos
-mongoose
-  .connect("mongodb://localhost:27017/bebidas")
+//.connect("mongodb://localhost:27017/bebidas")
+mongoose.connect(process.env.MONGO_URI)
   .then((conn) => {
     console.log(`Conectado a la base de datos: "${conn.connection.name}"`);
   })
