@@ -6,11 +6,7 @@ const bodyParser = require("body-parser");
 
 // conectamos a la base de datos
 mongoose
-  // .connect("mongodb://localhost:27017/bebidas")
-  .connect(
-    // despues del .net/ va el nombre de la base de datos
-    "mongodb+srv://abrilscti22:d4qJzkfHbgv2ZR3Z@cluster0.kvrkmzs.mongodb.net/bebidas?retryWrites=true&w=majority&appName=Cluster0"
-  )
+  .connect("mongodb://localhost:27017/bebidas")
   .then((conn) => {
     console.log(`Conectado a la base de datos: "${conn.connection.name}"`);
   })

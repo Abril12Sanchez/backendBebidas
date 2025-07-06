@@ -1,5 +1,7 @@
 const express = require("express");
 const upload = require("../Upload");
+const fs = require('fs')
+const path = require('path')
 const bebidaRouter = express.Router();
 
 // Declaramos un objeto nuevo
@@ -12,11 +14,11 @@ bebidaRouter.route('/agregar').post(upload.single('imagen'), (req, res)=>{
         tipo: req.body.tipo,
         ingredientes: req.body.ingredientes,
         precio: req.body.precio,
-        tamaño: req.body.tamaño,
+        tamanio: req.body.tamanio,
         calorias: req.body.calorias,
         porcentaje_alcohol: req.body.porcentaje_alcohol,
         nota: req.body.nota,
-        imagen: req.file ? `/uploads/${req.file.filename}`: '' // aquí guardas la ruta
+        imagen: req.file ? `/uploads/${req.file.filename}` : '' //guardamos la ruta de las imagenes
     });
 
     nuevaBebida.save()
@@ -53,30 +55,53 @@ bebidaRouter.route('/bebida/:id').get((req, res) => {
 })
 
 //actualizar una bebida
-bebidaRouter.route('/actualizar/:id').put((req, res) => {
-    Bebida.findByIdAndUpdate(req.params.id, {
-        $set: req.body
-    })
-    .then((data) => {
-        console.log("La bebida se actualizo correctamente")
-        res.send(data)
-    })
-    .catch((error)=>{
-        console.error(error)
-    })
-})
+bebidaRouter.route('/actualizar/:id').put(upload.single('imagen'), async (req, res) => {
+    try {
+        const bebida = await Bebida.findById(req.params.id);
+
+        // Si se subió una nueva imagen, eliminar la anterior
+        if (req.file && bebida.imagen) {
+            const imagenAnteriorPath = path.join(__dirname, '..', bebida.imagen);
+            if (fs.existsSync(imagenAnteriorPath)) {
+                fs.unlinkSync(imagenAnteriorPath);
+            }
+        }
+
+        // Actualizar la bebida
+        bebida.set({
+            ...req.body,
+            imagen: req.file ? `/uploads/${req.file.filename}` : bebida.imagen,
+        });
+
+        const bebidaActualizada = await bebida.save();
+        res.send(bebidaActualizada);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al actualizar la bebida');
+    }
+});
+
+
 
 //eliminar una bebida
-bebidaRouter.route('/eliminar/:id').delete((req, res)=>{
-    Bebida.findByIdAndDelete(req.params.id)
-    .then((data) => {
-        console.log('La bebida se elimino correctamente')
-        res.send(data)
-    })
-    .catch((error) => {
-        console.error(error)
-    })
-})
+bebidaRouter.route('/eliminar/:id').delete(async (req, res) => {
+    try {
+        const bebida = await Bebida.findByIdAndDelete(req.params.id);
+
+        if (bebida && bebida.imagen) {
+            const imagenPath = path.join(__dirname, '..', bebida.imagen);
+            if (fs.existsSync(imagenPath)) {
+                fs.unlinkSync(imagenPath);
+            }
+        }
+
+        res.send(bebida);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al eliminar la bebida');
+    }
+});
+
 
 
 // Exportamos el router
