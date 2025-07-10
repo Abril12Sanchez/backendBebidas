@@ -1,13 +1,18 @@
 const express = require("express");
-const path = require("path")
+const path = require("path");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-require('dotenv').config();
+require("dotenv").config();
 
 // conectamos a la base de datos
-//.connect("mongodb://localhost:27017/bebidas")
-mongoose.connect(process.env.MONGO_URI)
+
+mongoose
+  // .connect("mongodb://localhost:27017/bebidas")
+  .connect(
+    "mongodb+srv://abrilscti22:d4qJzkfHbgv2ZR3Z@cluster0.kvrkmzs.mongodb.net/bebidas?retryWrites=true&w=majority&appName=Cluster0"
+  )
+  // .connect(process.env.MONGO_URI)
   .then((conn) => {
     console.log(`Conectado a la base de datos: "${conn.connection.name}"`);
   })
@@ -17,13 +22,13 @@ mongoose.connect(process.env.MONGO_URI)
 
 //configuarar el servidor web
 const bebidaRutas = require("./routes/bebida.routes");
-const { create } = require("./models/Bebida");
+// const { create } = require("./models/Bebida");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(cors());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api", bebidaRutas);
 // Puerto de escucha _ habilitamos el puerto 4000

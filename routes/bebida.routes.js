@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const bebidaRouter = express.Router();
 
+
 // Declaramos un objeto nuevo
 let Bebida = require("../models/Bebida");
 
